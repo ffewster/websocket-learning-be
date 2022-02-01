@@ -13,6 +13,5 @@ export default (
   _socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
   message: IMessage
 ) => {
-  console.log({ "Inbound Message": message });
   io.emit("chat message", message);
 };
