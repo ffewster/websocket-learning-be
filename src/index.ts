@@ -1,19 +1,18 @@
 import express, { Request, Response } from "express";
 import http from "http";
-import { Server, Socket } from "socket.io";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { Server } from "socket.io";
 
 // Websocket Controllers
 import chatMessageController, { IMessage } from "./controllers/chatMessage";
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 
 const app = express();
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3001",
+    origin: ["http://localhost:3000", "http://192.168.0.17:3000"],
     methods: ["GET", "POST"],
     credentials: false,
   },
