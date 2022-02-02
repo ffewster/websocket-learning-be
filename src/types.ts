@@ -9,13 +9,12 @@ export interface IUser {
 export interface ServerToClientEvents {
     chatMessage: (message: IMessage) => void;
     connectedUsers: (users: Array<IUser>) => void;
-    // noArg: () => void;
-    // basicEmit: (a: number, b: string, c: Buffer) => void;
-    // withAck: (d: string, callback: (e: number) => void) => void;
+    privateMessage: (message: IMessage & { from: string }) => void;
 }
 
 export interface ClientToServerEvents {
     chatMessage: (message: IMessage) => void;
+    privateMessage: (message: IMessage & { to: string }) => void;
 }
 
 export interface InterServerEvents {

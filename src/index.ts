@@ -9,7 +9,8 @@ import {
 } from "./types";
 
 // Websocket Controllers
-import chatMessageController, { IMessage } from "./controllers/chatMessage";
+import chatMessageController from "./controllers/chatMessage";
+import privateMessageController from "./controllers/privateMessage";
 
 // Middleware
 import { authMiddleware } from "./middleware/auth";
@@ -47,9 +48,8 @@ io.on("connection", (socket) => {
 
   io.emit("connectedUsers", getConnectedUsers(io));
 
-  socket.on("chatMessage", (message: IMessage) =>
-    chatMessageController(io, socket, message)
-  );
+  socket.on("chatMessage", message => chatMessageController(io, message));
+  socket.on('privateMessage', message => privateMessageController(socket, message));
 
   socket.on("disconnect", () => {
     console.log('Client disconnected');

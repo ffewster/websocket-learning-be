@@ -1,4 +1,4 @@
-import { Server } from "socket.io";
+import { Socket } from "socket.io";
 import {
   ClientToServerEvents,
   InterServerEvents,
@@ -14,13 +14,20 @@ export interface IMessage {
 }
 
 export default (
-  io: Server<
+  socket: Socket<
     ClientToServerEvents,
     ServerToClientEvents,
     InterServerEvents,
     SocketData
   >,
-  message: IMessage
+  message: IMessage & { to: string }
 ) => {
-  io.emit("chatMessage", message);
+  socket.to(message.to).emit("privateMessage", {
+      ...message,
+      from: socket.id
+  });
+  socket.emit("privateMessage", {
+      ...message,
+      from: message.to
+  });
 };
