@@ -1,19 +1,14 @@
 import { Socket } from "socket.io";
 import { ExtendedError } from "socket.io/dist/namespace";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from "src/types";
 
 interface Auth {
   [key: string]: unknown;
   username: string;
 }
 
-export interface ExtendedSocket
-  extends Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> {
-  username?: string;
-}
-
 export const authMiddleware = (
-  socket: ExtendedSocket,
+  socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>,
   next: (err?: ExtendedError | undefined) => void
 ) => {
   const auth = socket?.handshake.auth as Auth;
@@ -21,6 +16,6 @@ export const authMiddleware = (
   if (!username) {
     return next(new Error("invalid username"));
   }
-  socket.username = username;
+  socket.data.username = username
   next();
 };

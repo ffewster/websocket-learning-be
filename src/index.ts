@@ -1,17 +1,34 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import http from "http";
 import { Server } from "socket.io";
+import {
+  ClientToServerEvents,
+  InterServerEvents,
+  ServerToClientEvents,
+  SocketData,
+} from "./types";
 
 // Websocket Controllers
 import chatMessageController, { IMessage } from "./controllers/chatMessage";
-import { authMiddleware, ExtendedSocket } from "./middleware/auth";
+
+// Middleware
+import { authMiddleware } from "./middleware/auth";
+
+// Helpers
+import { getConnectedUsers } from "./helpers";
 
 const { PORT = 3001 } = process.env;
 
 const app = express();
 
+// Configure server & socket.io
 const httpServer = http.createServer(app);
-export const io = new Server(httpServer, {
+export const io = new Server<
+  ClientToServerEvents,
+  ServerToClientEvents,
+  InterServerEvents,
+  SocketData
+>(httpServer, {
   cors: {
     origin: ["http://localhost:3000", "http://192.168.0.17:3000"],
     methods: ["GET", "POST"],
@@ -22,26 +39,25 @@ export const io = new Server(httpServer, {
 // Register middlewares
 io.use(authMiddleware);
 
-app.get("/", (_req: Request, res: Response) => {
-  res.send({ response: "I am alive" }).status(200);
-});
-
-io.on("connection", (socket: ExtendedSocket) => {
-  console.log("New client connected");
-
+io.on("connection", (socket) => {
+  console.log('Client connected');
   socket.onAny((event, ...args) => {
     console.log(event, args);
   });
 
-  socket.on("chat message", (message: IMessage) =>
+  io.emit("connectedUsers", getConnectedUsers(io));
+
+  socket.on("chatMessage", (message: IMessage) =>
     chatMessageController(io, socket, message)
   );
 
   socket.on("disconnect", () => {
-    console.log("Client disconnected");
+    console.log('Client disconnected');
+    io.emit("connectedUsers", getConnectedUsers(io));
   });
 });
 
+// RUN SERVER
 httpServer.listen(PORT, () => {
   console.log(`Express server is listening on localhost:${PORT}`);
 });
