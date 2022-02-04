@@ -6,10 +6,17 @@ export interface IUser {
     username?: string;
 }
 
+interface ISessionDetails {
+    sessionID?: string;
+    userID?: string;
+    username?: string;
+}
+
 export interface ServerToClientEvents {
     chatMessage: (message: IMessage) => void;
     connectedUsers: (users: Array<IUser>) => void;
     privateMessage: (message: IMessage & { from: string }) => void;
+    session: (sessionDetails: ISessionDetails) => void
 }
 
 export interface ClientToServerEvents {
@@ -23,6 +30,8 @@ export interface InterServerEvents {
 
 export interface SocketData {
     username?: string
+    sessionID?: string
+    userID?: string;
 }
 
 export type Test = Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>

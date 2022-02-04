@@ -17,6 +17,7 @@ import { authMiddleware } from "./middleware/auth";
 
 // Helpers
 import { getConnectedUsers } from "./helpers";
+import { persistentIdMiddleware } from "./middleware/persistentId";
 
 const { PORT = 3001 } = process.env;
 
@@ -39,20 +40,30 @@ export const io = new Server<
 
 // Register middlewares
 io.use(authMiddleware);
+io.use(persistentIdMiddleware);
 
 io.on("connection", (socket) => {
-  console.log('Client connected');
   socket.onAny((event, ...args) => {
     console.log(event, args);
   });
 
+  socket.emit("session", {
+    sessionID: socket.data.sessionID,
+    userID: socket.data.userID,
+    username: socket.data.username,
+  });
+
+  console.log("Client connected");
+
   io.emit("connectedUsers", getConnectedUsers(io));
 
-  socket.on("chatMessage", message => chatMessageController(io, message));
-  socket.on('privateMessage', message => privateMessageController(socket, message));
+  socket.on("chatMessage", (message) => chatMessageController(io, message));
+  socket.on("privateMessage", (message) =>
+    privateMessageController(socket, message)
+  );
 
   socket.on("disconnect", () => {
-    console.log('Client disconnected');
+    console.log("Client disconnected");
     io.emit("connectedUsers", getConnectedUsers(io));
   });
 });
