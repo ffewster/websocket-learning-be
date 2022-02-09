@@ -15,6 +15,7 @@ interface ISessionDetails {
 export interface ServerToClientEvents {
     chatMessage: (message: IMessage) => void;
     connectedUsers: (users: Array<IUser>) => void;
+    disconnectedUser: (user: IUser) => void;
     privateMessage: (message: IMessage & { from: string }) => void;
     session: (sessionDetails: ISessionDetails) => void
 }

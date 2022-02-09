@@ -43,6 +43,7 @@ io.use(authMiddleware);
 io.use(persistentIdMiddleware);
 
 io.on("connection", (socket) => {
+
   socket.onAny((event, ...args) => {
     console.log(event, args);
   });
@@ -64,7 +65,10 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
-    io.emit("connectedUsers", getConnectedUsers(io));
+    io.emit('disconnectedUser', {
+      userId: socket.id,
+      username: socket.handshake.auth.username,
+    });
   });
 });
 
