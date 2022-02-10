@@ -1,5 +1,4 @@
-import chatMessage from "./chatMessage";
+import chatMessageController from "./chatMessage";
+import privateMessageController from "./privateMessage";
 
-module.exports = {
-    chatMessage
-}
+export { chatMessageController, privateMessageController };

@@ -8,22 +8,22 @@ import {
   SocketData,
 } from "./types";
 
-// Websocket Controllers
-import chatMessageController from "./controllers/chatMessage";
-import privateMessageController from "./controllers/privateMessage";
+// CONTROLLERS
+import { chatMessageController, privateMessageController } from "./controllers";
 
-// Middleware
-import { authMiddleware } from "./middleware/auth";
+// MIDDLEWARE
+import { authMiddleware, persistentIdMiddleware } from "./middleware";
 
-// Helpers
-import { getConnectedUsers } from "./helpers";
-import { persistentIdMiddleware } from "./middleware/persistentId";
+// HELPERS
+import { getConnectedUsers } from "./utils";
 
 const { PORT = 3001 } = process.env;
 
 const app = express();
 
-// Configure server & socket.io
+/**
+ * Configure http server and socket.io instance
+ */
 const httpServer = http.createServer(app);
 export const io = new Server<
   ClientToServerEvents,
@@ -38,12 +38,17 @@ export const io = new Server<
   },
 });
 
-// Register middlewares
+/**
+ * REGISTER MIDDLWARES
+ */
 io.use(authMiddleware);
 io.use(persistentIdMiddleware);
 
+/**
+ * On websocket connection
+ */
 io.on("connection", (socket) => {
-
+  console.log("Client connected");
   socket.onAny((event, ...args) => {
     console.log(event, args);
   });
@@ -54,18 +59,18 @@ io.on("connection", (socket) => {
     username: socket.data.username,
   });
 
-  console.log("Client connected");
 
   io.emit("connectedUsers", getConnectedUsers(io));
 
   socket.on("chatMessage", (message) => chatMessageController(io, message));
+
   socket.on("privateMessage", (message) =>
     privateMessageController(socket, message)
   );
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
-    io.emit('disconnectedUser', {
+    io.emit("disconnectedUser", {
       userId: socket.id,
       username: socket.handshake.auth.username,
     });
