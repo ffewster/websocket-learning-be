@@ -6,7 +6,7 @@ import {
   InterServerEvents,
   SocketData,
 } from "src/types";
-import { InMemorySessionStore, randomId } from "../helpers";
+import { InMemorySessionStore, randomId } from "../utils";
 
 const sessionStore = new InMemorySessionStore();
 
