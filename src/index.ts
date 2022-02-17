@@ -12,7 +12,9 @@ import {
 import { chatMessageController, privateMessageController } from "./controllers";
 
 // MIDDLEWARE
-import { authMiddleware, persistentIdMiddleware } from "./middleware";
+import { 
+  persistentIdMiddleware
+} from "./middleware";
 
 // HELPERS
 import { getConnectedUsers } from "./utils";
@@ -41,7 +43,6 @@ export const io = new Server<
 /**
  * REGISTER MIDDLWARES
  */
-io.use(authMiddleware);
 io.use(persistentIdMiddleware);
 
 /**
@@ -56,7 +57,6 @@ io.on("connection", (socket) => {
   socket.emit("session", {
     sessionID: socket.data.sessionID,
     userID: socket.data.userID,
-    username: socket.data.username,
   });
 
 

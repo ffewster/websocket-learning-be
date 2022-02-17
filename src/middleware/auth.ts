@@ -16,6 +16,6 @@ export const authMiddleware = (
   if (!username) {
     return next(new Error("invalid username"));
   }
-  socket.data.username = username
+  socket.data.username = username;
   next();
 };
