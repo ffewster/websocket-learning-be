@@ -9,6 +9,10 @@ class InMemorySessionStore {
     this.sessions = new Map();
   }
 
+  debug(): void {
+    console.log(this.sessions);
+  }
+
   findSession(id: any) {
     return this.sessions.get(id);
   }

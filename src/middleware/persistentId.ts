@@ -18,7 +18,6 @@ export const persistentIdMiddleware = (
   next: (err?: ExtendedError | undefined) => void
 ) => {
   const sessionID = socket.handshake.auth.sessionID;
-  console.log({ sessionID });
   if (sessionID) {
     // find existing session
     const session = sessionStore.findSession(sessionID);
@@ -26,6 +25,10 @@ export const persistentIdMiddleware = (
       socket.data.sessionID = sessionID;
       socket.data.userID = session.userID;
       socket.data.username = session.username;
+      sessionStore.saveSession(sessionID, {
+        ...session,
+        connected: false,
+      });
       return next();
     }
   }

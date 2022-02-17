@@ -54,7 +54,6 @@ io.on("connection", (socket) => {
 
   const { userID, sessionID, username } = socket.data;
   if (userID) {
-    console.log('joining room :', userID);
     socket.join(userID);
   }
 
