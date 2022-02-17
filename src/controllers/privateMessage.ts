@@ -22,12 +22,17 @@ export default (
   >,
   message: IMessage & { to: string }
 ) => {
-  socket.to(message.to).emit("privateMessage", {
-      ...message,
-      from: socket.id
-  });
-  socket.emit("privateMessage", {
-      ...message,
-      from: message.to
-  });
+  const { to } = message;
+  const { userID } = socket.data;
+  console.log({ to, userID });
+  if (userID) {
+    socket
+      .to(to)
+      .to(userID)
+      .emit("privateMessage", {
+        ...message,
+        from: userID,
+        to,
+      });
+  }
 };

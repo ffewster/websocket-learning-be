@@ -12,12 +12,10 @@ import {
 import { chatMessageController, privateMessageController } from "./controllers";
 
 // MIDDLEWARE
-import { 
-  persistentIdMiddleware
-} from "./middleware";
+import { persistentIdMiddleware } from "./middleware";
 
 // HELPERS
-import { getConnectedUsers } from "./utils";
+import { getConnectedUsers, sessionStore } from "./utils";
 
 const { PORT = 3001 } = process.env;
 
@@ -54,26 +52,46 @@ io.on("connection", (socket) => {
     console.log(event, args);
   });
 
+  const { userID, sessionID, username } = socket.data;
+  if (userID) {
+    console.log('joining room :', userID);
+    socket.join(userID);
+  }
+
   socket.emit("session", {
     sessionID: socket.data.sessionID,
     userID: socket.data.userID,
   });
 
-
   io.emit("connectedUsers", getConnectedUsers(io));
 
-  socket.on("chatMessage", (message) => chatMessageController(io, message));
+  socket.on("chatMessage", (message) => {
+    chatMessageController(io, message);
+  });
 
-  socket.on("privateMessage", (message) =>
-    privateMessageController(socket, message)
-  );
+  socket.on("privateMessage", (message) => {
+    privateMessageController(socket, message);
+  });
 
-  socket.on("disconnect", () => {
+  console.log({ data: socket.data });
+
+  socket.on("disconnect", async () => {
     console.log("Client disconnected");
-    io.emit("disconnectedUser", {
-      userId: socket.id,
-      username: socket.handshake.auth.username,
-    });
+    if (userID && sessionID && username) {
+      const matchingSockets = await io.in(userID).allSockets();
+      const isDisconnected = !matchingSockets.size;
+      console.log({ userID });
+      if (isDisconnected) {
+        // Notify other users
+        socket.broadcast.emit("disconnectedUser", userID);
+        // update the connection status of the session
+        sessionStore.saveSession(sessionID, {
+          userID,
+          username,
+          connected: false,
+        });
+      }
+    }
   });
 });
 

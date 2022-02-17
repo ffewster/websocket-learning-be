@@ -1,4 +1,4 @@
 import { getConnectedUsers } from "./getConnectedUsers";
-import { InMemorySessionStore, randomId } from "./in-memory-store";
+import { sessionStore, randomId } from "./in-memory-store";
 
-export { getConnectedUsers, InMemorySessionStore, randomId };
+export { getConnectedUsers, sessionStore, randomId };

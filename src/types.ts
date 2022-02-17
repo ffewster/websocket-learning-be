@@ -15,14 +15,14 @@ interface ISessionDetails {
 export interface ServerToClientEvents {
     chatMessage: (message: IMessage) => void;
     connectedUsers: (users: Array<IUser>) => void;
-    disconnectedUser: (user: IUser) => void;
-    privateMessage: (message: IMessage & { from: string }) => void;
+    disconnectedUser: (userID: string) => void;
+    privateMessage: (message: IMessage & { from: string, to: string }) => void;
     session: (sessionDetails: ISessionDetails) => void
 }
 
 export interface ClientToServerEvents {
     chatMessage: (message: IMessage) => void;
-    privateMessage: (message: IMessage & { to: string }) => void;
+    privateMessage: (message: IMessage & { from: string, to: string }) => void;
 }
 
 export interface InterServerEvents {

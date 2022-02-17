@@ -2,7 +2,7 @@ import crypto from 'crypto';
 
 export const randomId = () => crypto.randomBytes(8).toString("hex");
 
-export class InMemorySessionStore {
+class InMemorySessionStore {
   sessions: Map<any, any>;
 
   constructor() {
@@ -21,3 +21,5 @@ export class InMemorySessionStore {
     return [...this.sessions.values()];
   }
 }
+
+export const sessionStore = new InMemorySessionStore()

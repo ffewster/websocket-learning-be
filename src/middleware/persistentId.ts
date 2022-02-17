@@ -6,9 +6,7 @@ import {
   InterServerEvents,
   SocketData,
 } from "src/types";
-import { InMemorySessionStore, randomId } from "../utils";
-
-const sessionStore = new InMemorySessionStore();
+import { randomId, sessionStore } from "../utils";
 
 export const persistentIdMiddleware = (
   socket: Socket<
@@ -20,6 +18,7 @@ export const persistentIdMiddleware = (
   next: (err?: ExtendedError | undefined) => void
 ) => {
   const sessionID = socket.handshake.auth.sessionID;
+  console.log({ sessionID });
   if (sessionID) {
     // find existing session
     const session = sessionStore.findSession(sessionID);

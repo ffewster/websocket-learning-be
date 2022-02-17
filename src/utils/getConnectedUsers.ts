@@ -16,11 +16,14 @@ export const getConnectedUsers = (
   >
 ): Array<IUser> => {
   const users: Array<IUser> = [];
-  for (const [id, socket] of io.of("/").sockets) {
-    users.push({
-      userId: id,
-      username: socket.data.username,
-    });
+  for (const [_id, socket] of io.of("/").sockets) {
+    const { userID, username } = socket.data;
+    if(userID && username) {
+      users.push({
+        userId: userID,
+        username: username,
+      });
+    }
   }
   return users;
 };
