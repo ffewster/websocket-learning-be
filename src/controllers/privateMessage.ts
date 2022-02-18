@@ -1,4 +1,5 @@
 import { Socket } from "socket.io";
+import { messageStore } from "../utils";
 import {
   ClientToServerEvents,
   InterServerEvents,
@@ -24,15 +25,14 @@ export default (
 ) => {
   const { to } = message;
   const { userID } = socket.data;
-  console.log({ to, userID });
   if (userID) {
-    socket
-      .to(to)
-      .to(userID)
-      .emit("privateMessage", {
-        ...message,
-        from: userID,
-        to,
-      });
+    const completeMessage = { 
+      ...message,
+      from: userID,
+      to,
+    }
+    socket.to(to).to(userID).emit("privateMessage", completeMessage);
+    messageStore.saveMessage(completeMessage);
   }
+  messageStore.debug();
 };

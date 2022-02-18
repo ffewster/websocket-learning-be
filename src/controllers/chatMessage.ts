@@ -11,6 +11,8 @@ export interface IMessage {
   text: string;
   id: number;
   timestamp: number;
+  to: string;
+  from: string;
 }
 
 export default (

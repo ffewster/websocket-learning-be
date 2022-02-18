@@ -27,7 +27,7 @@ export const persistentIdMiddleware = (
       socket.data.username = session.username;
       sessionStore.saveSession(sessionID, {
         ...session,
-        connected: false,
+        connected: true,
       });
       return next();
     }
@@ -40,5 +40,12 @@ export const persistentIdMiddleware = (
   socket.data.sessionID = randomId();
   socket.data.userID = randomId();
   socket.data.username = username;
+  const { userID, sessionID: newSessionID } = socket.data;
+  sessionStore.saveSession(newSessionID, {
+    connected: true,
+    userID,
+    username,
+  });
+  sessionStore.debug();
   next();
 };

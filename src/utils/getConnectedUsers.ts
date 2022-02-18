@@ -15,15 +15,12 @@ export const getConnectedUsers = (
     SocketData
   >
 ): Array<IUser> => {
-  const users: Array<IUser> = [];
+  const users = new Map<string, IUser>();
   for (const [_id, socket] of io.of("/").sockets) {
     const { userID, username } = socket.data;
-    if(userID && username) {
-      users.push({
-        userId: userID,
-        username: username,
-      });
+    if (userID && username) {
+      users.set(userID, { userId: userID, username });
     }
   }
-  return users;
+  return Array.from(users.values());
 };
