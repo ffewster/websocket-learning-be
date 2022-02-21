@@ -4,6 +4,8 @@ import { IMessage } from "./controllers/chatMessage";
 export interface IUser {
     userId: string;
     username?: string;
+    connected?: boolean;
+    messages?: IMessage[];
 }
 
 interface ISessionDetails {

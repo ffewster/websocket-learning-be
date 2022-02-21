@@ -62,7 +62,7 @@ io.on("connection", (socket) => {
     userID: socket.data.userID,
   });
 
-  io.emit("connectedUsers", getConnectedUsers(io));
+  io.emit("connectedUsers", getConnectedUsers(io, socket));
 
   socket.on("chatMessage", (message) => {
     chatMessageController(io, message);
